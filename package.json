@@ -1,0 +1,18 @@
+{
+  "name": "irctc-backend",
+  "private": true,
+  "workspaces": [
+    "user-service",
+    "search-service"
+  ],
+  "scripts": {
+    "dev:user": "npm run dev --workspace user-service",
+    "dev:search": "npm run dev --workspace search-service",
+    "build": "npm run build --workspace user-service && npm run build --workspace search-service",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1"
+  }
+}
