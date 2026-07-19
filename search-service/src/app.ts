@@ -1,5 +1,4 @@
 import "dotenv/config";
-import cors from "cors";
 import cookieParser from "cookie-parser";
 import express from "express";
 import helmet from "helmet";
@@ -7,7 +6,8 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { env } from "./config/env";
 import { errorMiddleware } from "./middleware/error.middleware";
-import { requestMiddleware } from "./middleware/request.middleware";
+import { corsMiddleware } from "./middleware/cors.middleware";
+import { requestMiddleware } from "./middleware/req.middleware";
 import { healthRouter } from "./routes/health.routes";
 import { searchRouter } from "./routes/search.routes";
 
@@ -26,13 +26,8 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(corsMiddleware);
 app.use(requestMiddleware);
-app.use(
-  cors({
-    origin: env.allowedOrigins,
-    credentials: true,
-  }),
-);
 
 app.get("/", (_req, res) => {
   res.json({

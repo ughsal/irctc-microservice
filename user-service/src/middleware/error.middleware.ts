@@ -1,22 +1,33 @@
 import type { NextFunction, Request, Response } from "express";
-import { AppError } from "../utils/error";
+import { env } from "../config/env";
 import { logger } from "../utils/logger";
+import { AppError } from "../utils/error";
 
-export function errorMiddleware(
+export function errorHandler(
   error: unknown,
-  _req: Request,
+  req: Request,
   res: Response,
   _next: NextFunction,
 ): void {
-  const appError =
-    error instanceof AppError
-      ? error
-      : new AppError("Internal server error", 500);
+  if (error instanceof AppError) {
+    res.status(error.statusCode).json({
+      success: false,
+      message: error.message,
+    });
+    return;
+  }
 
-  logger.error(appError.message, error);
+  logger.error("Unhandled error", error);
 
-  res.status(appError.statusCode).json({
-    message: appError.message,
+  if (env.nodeEnv !== "production") {
+    logger.error(
+      `${req.method} ${req.originalUrl}`,
+      error instanceof Error ? error.stack : undefined,
+    );
+  }
+
+  res.status(500).json({
+    success: false,
+    message: "Internal Server Error",
   });
 }
-
