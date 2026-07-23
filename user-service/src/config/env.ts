@@ -11,8 +11,8 @@ export const env = {
   serviceName: process.env.SERVICE_NAME ?? "user-service",
   databaseUrl:
     process.env.DATABASE_URL ??
-    "postgres://admin:irctcpass@localhost:5432/postgres",
-  redisUrl: process.env.REDIS_URL ?? "redis://:irctcpass@redis:6379",
+    "postgres://admin:irctcpass@localhost:5432/user_service_database",
+  redisUrl: process.env.REDIS_URL ?? "redis://:irctcpass@localhost:6379",
   // kafkaBroker: process.env.KAFKA_BROKER ?? "localhost:9093",
   jwtAccessSecret: process.env.JWT_ACCESS_SECRET ?? "your_access_secret",
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET ?? "your_refresh_secret",

@@ -9,7 +9,7 @@ export const env = {
   nodeEnv: process.env.NODE_ENV ?? "development",
   logLevel: process.env.LOG_LEVEL ?? "info",
   serviceName: process.env.SERVICE_NAME ?? "search-service",
-  redisUrl: process.env.REDIS_URL ?? "redis://:irctcpass@redis:6379",
+  redisUrl: process.env.REDIS_URL ?? "redis://:irctcpass@localhost:6379",
   allowedOrigins: parseOrigins(
     process.env.ALLOWED_ORIGINS ??
       "http://localhost:4000,http://localhost:4001,http://localhost:4002",

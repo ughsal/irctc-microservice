@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-irctcpass}
-      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-user_service_database}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
@@ -16,7 +16,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-postgres}",
+          "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-user_service_database}",
         ]
       interval: 10s
       timeout: 5s
@@ -114,7 +114,7 @@ services:
       PORT: ${USER_SERVICE_PORT:-4001}
       LOG_LEVEL: info
       SERVICE_NAME: user-service
-      DATABASE_URL: postgres://admin:irctcpass@postgres:5432/postgres
+      DATABASE_URL: postgres://admin:irctcpass@postgres:5432/user_service_database
       REDIS_URL: redis://:${REDIS_PASSWORD:-irctcpass}@redis:6379
       # KAFKA_BROKER: kafka:9092
       ALLOWED_ORIGINS: http://localhost:4000,http://localhost:4001,http://localhost:4005
