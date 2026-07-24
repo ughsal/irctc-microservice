@@ -1,7 +1,7 @@
 import winston from "winston";
 import config from "./config";
 
-const logger = winston.createLogger({
+export const logger = winston.createLogger({
   level: config.LOG_LEVEL,
   defaultMeta: { service: config.SERVICE_NAME },
   format: winston.format.combine(
@@ -13,4 +13,4 @@ const logger = winston.createLogger({
   transports: [new winston.transports.Console()],
 });
 
-// Use ES Module export to match your conf
+export default logger;

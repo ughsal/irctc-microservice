@@ -119,17 +119,17 @@ services:
       # KAFKA_BROKER: kafka:9092
       ALLOWED_ORIGINS: http://localhost:4000,http://localhost:4001,http://localhost:4005
       OTP_TTL: 300
-      OTP_HMAC_SECRET: your_64_character_hex_string_here
+      OTP_HMAC_SECRET: ${OTP_HMAC_SECRET}
       OTP_RATE_MAX_PER_HOUR: 5
       OTP_MAX_VERIFY_ATTEMPTS: 5
       SENDGRID_API_KEY: your_sendgrid_api_key_here
-      JWT_ACCESS_SECRET: your_64_character_hex_string_here
-      JWT_REFRESH_SECRET: your_128_character_hex_string_here
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       ACCESS_TOKEN_EXP: 15m
       REFRESH_TOKEN_EXP: 7d
       ACCESS_TOKEN_EXP_SEC: 900
       REFRESH_TOKEN_EXP_SEC: 604800
-      INTERNAL_SERVICE_KEY: your_shared_internal_service_key_here
+      INTERNAL_SERVICE_KEY: your_internal_service_key_here
     depends_on:
       postgres:
         condition: service_healthy

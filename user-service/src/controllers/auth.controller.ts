@@ -1,49 +1,128 @@
 import type { Request, Response } from "express";
+import { env } from "../config/env";
 import { asyncHandler } from "../utils/asyncHandler";
 import { AppError } from "../utils/error";
-import { registerUser, loginUser } from "../services/auth.service";
+import { getDeviceFingerprint } from "../utils/deviceFingerprint";
+import * as authService from "../services/auth.service";
 
-type RegisterBody = {
-  email?: string;
-  password?: string;
-  name?: string;
-};
+const isProd = env.nodeEnv === "production";
 
-type LoginBody = {
-  email?: string;
-  password?: string;
-};
+const cookieOptions = (maxAge: number) => ({
+  httpOnly: true,
+  secure: isProd,
+  sameSite: isProd ? ("strict" as const) : ("lax" as const),
+  maxAge,
+});
 
-export const register = asyncHandler(
-  async (req: Request<unknown, unknown, RegisterBody>, res: Response) => {
-    const { email, password, name } = req.body;
+export const sendOTP = asyncHandler(async (req: Request, res: Response) => {
+  const { firstName, lastName, email, password, confirmPassword } = req.body;
 
-    if (!email || !password) {
-      throw new AppError("Email and password are required", 400);
-    }
+  if (!firstName || !lastName || !email || !password || !confirmPassword) {
+    throw new AppError("All fields are mandatory", 400);
+  }
 
-    const result = await registerUser({ email, password, name });
+  if (password !== confirmPassword) {
+    throw new AppError("Password mismatch", 400);
+  }
 
-    res.status(201).json({
+  const { otpSessionId } = await authService.sendOTP(firstName, lastName, email, password);
+
+  res
+    .cookie("otp_session", otpSessionId, cookieOptions(env.otpTtl * 1000))
+    .status(200)
+    .json({
       success: true,
-      ...result,
+      message: "OTP sent successfully",
     });
-  },
-);
+});
 
-export const login = asyncHandler(
-  async (req: Request<unknown, unknown, LoginBody>, res: Response) => {
-    const { email, password } = req.body;
+export const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
+  const { otp } = req.body;
+  const otpSessionId = req.cookies?.otp_session;
 
-    if (!email || !password) {
-      throw new AppError("Email and password are required", 400);
-    }
+  if (!otp || !otpSessionId) {
+    throw new AppError("OTP or OTP session is missing", 400);
+  }
 
-    const result = await loginUser({ email, password });
+  const user = await authService.verifyOTP(otp, otpSessionId);
 
-    res.status(200).json({
+  res.clearCookie("otp_session");
+
+  res.status(201).json({
+    success: true,
+    message: "User Account created successfully",
+    data: user,
+  });
+});
+
+export const login = asyncHandler(async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new AppError("Email and Password are required", 400);
+  }
+
+  const deviceId = getDeviceFingerprint(req);
+  const { accessToken, refreshToken, loggedInUser } = await authService.login(
+    email,
+    password,
+    deviceId,
+  );
+
+  res
+    .cookie("accessToken", accessToken, cookieOptions(env.accessTokenExpSec * 1000))
+    .cookie("refreshToken", refreshToken, cookieOptions(env.refreshTokenExpSec * 1000))
+    .status(200)
+    .json({
       success: true,
-      ...result,
+      message: "Logged in successfully",
+      loggedInUser,
     });
-  },
-);
+});
+
+export const rotateRefreshToken = asyncHandler(async (req: Request, res: Response) => {
+  const refreshToken = req.cookies?.refreshToken;
+
+  if (!refreshToken) {
+    throw new AppError("Refresh token is missing", 401);
+  }
+
+  const deviceId = getDeviceFingerprint(req);
+  const { newAccessToken, newRefreshToken } = await authService.rotateRefreshToken(
+    refreshToken,
+    deviceId,
+  );
+
+  res
+    .cookie("accessToken", newAccessToken, cookieOptions(env.accessTokenExpSec * 1000))
+    .cookie("refreshToken", newRefreshToken, cookieOptions(env.refreshTokenExpSec * 1000))
+    .status(200)
+    .json({
+      success: true,
+      message: "Access and Refresh token reissued",
+    });
+});
+
+export const verifyGoogleIdToken = asyncHandler(async (req: Request, res: Response) => {
+  const { idToken } = req.body;
+
+  if (!idToken) {
+    throw new AppError("Invalid Google ID Token", 400);
+  }
+
+  const deviceId = getDeviceFingerprint(req);
+  const { accessToken, refreshToken, loggedInUser } = await authService.verifyGoogleIdToken(
+    idToken,
+    deviceId,
+  );
+
+  res
+    .cookie("accessToken", accessToken, cookieOptions(env.accessTokenExpSec * 1000))
+    .cookie("refreshToken", refreshToken, cookieOptions(env.refreshTokenExpSec * 1000))
+    .status(200)
+    .json({
+      success: true,
+      message: "Logged in successfully",
+      loggedInUser,
+    });
+});

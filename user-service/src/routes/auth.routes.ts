@@ -1,8 +1,16 @@
 import { Router } from "express";
-import { login, register } from "../controllers/auth.controller";
+import {
+  login,
+  rotateRefreshToken,
+  sendOTP,
+  verifyGoogleIdToken,
+  verifyOTP,
+} from "../controllers/auth.controller";
 
 export const authRouter = Router();
 
-authRouter.post("/register", register);
+authRouter.post("/send-otp", sendOTP);
+authRouter.post("/verify-otp", verifyOTP);
 authRouter.post("/login", login);
-
+authRouter.post("/refresh", rotateRefreshToken);
+authRouter.post("/google-auth", verifyGoogleIdToken);
