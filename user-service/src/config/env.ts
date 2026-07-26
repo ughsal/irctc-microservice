@@ -25,7 +25,7 @@ export const env = {
   otpHmacSecret: process.env.OTP_HMAC_SECRET,
   otpRateMaxPerHour: Number(process.env.OTP_RATE_MAX_PER_HOUR),
   otpMaxVerifyAttempts: Number(process.env.OTP_MAX_VERIFY_ATTEMPTS),
-  sendgridApiKey: process.env.SENDGRID_API_KEY,
+  resendApiKey: process.env.RESEND_API_KEY,
   redisUserTtl: Number(process.env.REDIS_USER_TTL ?? 86400),
   internalServiceKey: process.env.INTERNAL_SERVICE_KEY,
   allowedOrigins: parseOrigins(

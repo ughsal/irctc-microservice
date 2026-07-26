@@ -1,12 +1,14 @@
 import { logger } from "../../utils/logger";
+import { sendOtpEmail as sendResendOtpEmail, sendWelcomeEmail as sendResendWelcomeEmail } from "../../services/email";
 
 export const notificationProducer = {
   async sendOtpEmail(email: string, otp: string, ttlMinutes: number): Promise<void> {
-    logger.info(`OTP email queued for ${email} with TTL ${ttlMinutes} minutes`);
-    logger.info(`OTP value: ${otp}`);
+    await sendResendOtpEmail(email, otp, ttlMinutes);
+    logger.info(`OTP email sent for ${email} with TTL ${ttlMinutes} minutes`);
   },
 
   async sendWelcomeEmail(email: string, firstName: string): Promise<void> {
-    logger.info(`Welcome email queued for ${email} (${firstName})`);
+    await sendResendWelcomeEmail(email, firstName);
+    logger.info(`Welcome email sent for ${email} (${firstName})`);
   },
 };
