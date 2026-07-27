@@ -26,6 +26,7 @@ export const env = {
   otpRateMaxPerHour: Number(process.env.OTP_RATE_MAX_PER_HOUR),
   otpMaxVerifyAttempts: Number(process.env.OTP_MAX_VERIFY_ATTEMPTS),
   resendApiKey: process.env.RESEND_API_KEY,
+  mailSend: process.env.MAIL_SEND,
   redisUserTtl: Number(process.env.REDIS_USER_TTL ?? 86400),
   internalServiceKey: process.env.INTERNAL_SERVICE_KEY,
   allowedOrigins: parseOrigins(

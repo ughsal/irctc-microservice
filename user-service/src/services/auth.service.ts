@@ -17,6 +17,7 @@ import {
   verifyRefreshToken,
 } from "../utils/auth";
 import { generateAndStoreOtp, verifyOtp } from "../utils/otp";
+import { verifyOtpEmail } from "./email";
 import { notificationProducer } from "../kafka/producer/notification.producer";
 
 const client = new OAuth2Client(env.googleClientId ?? "");
@@ -77,6 +78,11 @@ export async function verifyOTP(
     },
   });
 
+  await verifyOtpEmail({
+    email: meta.email,
+    firstName: meta.firstName,
+  });
+
   await notificationProducer.sendWelcomeEmail(meta.email, meta.firstName);
   logger.info(`Welcome email queued for ${meta.email}`);
 
@@ -108,7 +114,10 @@ export async function login(
     );
   }
 
-  const doesPasswordMatch = await bcrypt.compare(password, existingUser.password);
+  const doesPasswordMatch = await bcrypt.compare(
+    password,
+    existingUser.password,
+  );
 
   if (!doesPasswordMatch) {
     throw new UnauthorizedError("Invalid email or password");
@@ -116,7 +125,9 @@ export async function login(
 
   const accessToken = generateAccessToken(existingUser.id);
   const refreshToken = generateRefreshToken(existingUser.id);
-  const decodedRefreshToken = jwt.decode(refreshToken) as { jti?: string } | null;
+  const decodedRefreshToken = jwt.decode(refreshToken) as {
+    jti?: string;
+  } | null;
 
   if (!decodedRefreshToken?.jti) {
     throw new BadRequestError("Unable to create refresh token");
@@ -174,15 +185,21 @@ export async function rotateRefreshToken(
 
   const newAccessToken = generateAccessToken(userId);
   const newRefreshToken = generateRefreshToken(userId);
-  const decodedNewRefresh = jwt.decode(newRefreshToken) as { jti?: string } | null;
+  const decodedNewRefresh = jwt.decode(newRefreshToken) as {
+    jti?: string;
+  } | null;
 
   if (!decodedNewRefresh?.jti) {
     throw new BadRequestError("Unable to create refresh token");
   }
 
-  await redisClient.set(`refresh:${userId}:${deviceId}`, decodedNewRefresh.jti, {
-    EX: env.refreshTokenExpSec,
-  });
+  await redisClient.set(
+    `refresh:${userId}:${deviceId}`,
+    decodedNewRefresh.jti,
+    {
+      EX: env.refreshTokenExpSec,
+    },
+  );
 
   return { newAccessToken, newRefreshToken };
 }
@@ -266,15 +283,21 @@ export async function verifyGoogleIdToken(
 
   const accessToken = generateAccessToken(user.id);
   const refreshToken = generateRefreshToken(user.id);
-  const decodedRefreshToken = jwt.decode(refreshToken) as { jti?: string } | null;
+  const decodedRefreshToken = jwt.decode(refreshToken) as {
+    jti?: string;
+  } | null;
 
   if (!decodedRefreshToken?.jti) {
     throw new BadRequestError("Unable to create refresh token");
   }
 
-  await redisClient.set(`refresh:${user.id}:${deviceId}`, decodedRefreshToken.jti, {
-    EX: env.refreshTokenExpSec,
-  });
+  await redisClient.set(
+    `refresh:${user.id}:${deviceId}`,
+    decodedRefreshToken.jti,
+    {
+      EX: env.refreshTokenExpSec,
+    },
+  );
 
   const { password: _password, ...safeUser } = user;
 

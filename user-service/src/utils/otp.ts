@@ -75,20 +75,53 @@ export async function verifyOtp(
   otp: string,
   otpSessionId: string,
 ): Promise<OtpMeta | null> {
-  const rawSession = await redisClient.get(`otp:session:${otpSessionId}`);
+  const sessionKey = `otp:session:${otpSessionId}`;
+  const rawSession = await redisClient.get(sessionKey);
 
   if (!rawSession) {
     return null;
   }
 
   const session = JSON.parse(rawSession) as OtpSessionRecord;
-  const hashedOtp = hmacFor(session.meta.email, otp);
 
-  if (hashedOtp !== session.hashedOtp) {
+  const attemptsKey = `otp:attempts:${otpSessionId}`;
+
+  const attemptsCount = parseInt(
+    (await redisClient.get(attemptsKey)) ?? "0",
+    10,
+  );
+
+  if (attemptsCount >= config.OTP_MAX_VERIFY_ATTEMPTS) {
+    throw new TooManyRequestsError(
+      "Too many OTP verification attempts. Try again later.",
+    );
+  }
+
+  const submittedOtpHash = hmacFor(session.meta.email, otp);
+
+  const submittedHashBuffer = Buffer.from(submittedOtpHash, "hex");
+  const storedHashBuffer = Buffer.from(session.hashedOtp, "hex");
+
+  const otpMatches =
+    submittedHashBuffer.length === storedHashBuffer.length &&
+    crypto.timingSafeEqual(submittedHashBuffer, storedHashBuffer);
+
+  if (!otpMatches) {
+    const updatedAttempts = await redisClient.incr(attemptsKey);
+
+    if (updatedAttempts === 1) {
+      await redisClient.expire(attemptsKey, config.OTP_TTL);
+    }
+
+    if (updatedAttempts >= config.OTP_MAX_VERIFY_ATTEMPTS) {
+      await redisClient.del(sessionKey);
+    }
+
     return null;
   }
 
-  await redisClient.del(`otp:session:${otpSessionId}`);
+  // OTP is valid and must not be reusable
+  await redisClient.del([sessionKey, attemptsKey]);
 
   return session.meta;
 }

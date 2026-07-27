@@ -37,11 +37,27 @@ export const sendOTP = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
-  const { otp } = req.body;
-  const otpSessionId = req.cookies?.otp_session;
+  let requestBody: Record<string, unknown> = req.body ?? {};
 
-  if (!otp || !otpSessionId) {
-    throw new AppError("OTP or OTP session is missing", 400);
+  if (typeof req.body === "string") {
+    try {
+      requestBody = JSON.parse(req.body) as Record<string, unknown>;
+    } catch {
+      requestBody = {};
+    }
+  }
+
+  const otp = String(requestBody.otp ?? "").trim();
+  const bodyOtpSessionId = String(requestBody.otpSessionId ?? "").trim();
+  const cookieOtpSessionId = String(req.cookies?.otp_session ?? "").trim();
+  const otpSessionId = cookieOtpSessionId || bodyOtpSessionId;
+
+  if (!otp) {
+    throw new AppError("OTP is missing", 400);
+  }
+
+  if (!otpSessionId) {
+    throw new AppError("OTP session is missing", 400);
   }
 
   const user = await authService.verifyOTP(otp, otpSessionId);
