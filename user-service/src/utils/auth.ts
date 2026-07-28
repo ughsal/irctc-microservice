@@ -1,12 +1,10 @@
-import { randomUUID } from "crypto";
+import { createHash, randomUUID } from "crypto";
 import * as jwt from "jsonwebtoken";
 import { env } from "../config/env";
 
-type JwtPayload = {
+export type AuthTokenPayload = jwt.JwtPayload & {
   id: string;
-  role?: string;
-  sessionId?: string;
-  hash?: string;
+  jti?: string;
 };
 
 function requireSecret(secret: string | undefined, name: string): string {
@@ -17,26 +15,40 @@ function requireSecret(secret: string | undefined, name: string): string {
   return secret;
 }
 
-export function generateAccessToken(id: string): string {
+export function generateAccessToken(userId: string): string {
+  const secret = requireSecret(env.jwtAccessSecret, "JWT_ACCESS_SECRET");
+  return jwt.sign({ id: userId }, secret, {
+    expiresIn: env.accessTokenExp as jwt.SignOptions["expiresIn"],
+  });
+}
+
+export function generateRefreshToken(userId: string): string {
+  const secret = requireSecret(env.jwtRefreshSecret, "JWT_REFRESH_SECRET");
+
+  return jwt.sign(
+    {
+      id: userId,
+      jti: randomUUID(),
+    },
+    secret,
+    {
+      expiresIn: env.refreshTokenExp as jwt.SignOptions["expiresIn"],
+    },
+  );
+}
+
+export function hashToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
+}
+
+export function verifyAccessToken(token: string): AuthTokenPayload {
   const secret = requireSecret(env.jwtAccessSecret, "JWT_ACCESS_SECRET");
 
-  return jwt.sign({ id }, secret, {
-    expiresIn: env.accessTokenExp as jwt.SignOptions["expiresIn"],
-    jwtid: randomUUID(),
-  });
+  return jwt.verify(token, secret) as AuthTokenPayload;
 }
 
-export function generateRefreshToken(id: string): string {
+export function verifyRefreshToken(token: string): AuthTokenPayload {
   const secret = requireSecret(env.jwtRefreshSecret, "JWT_REFRESH_SECRET");
 
-  return jwt.sign({ id }, secret, {
-    expiresIn: env.refreshTokenExp as jwt.SignOptions["expiresIn"],
-    jwtid: randomUUID(),
-  });
-}
-
-export function verifyRefreshToken(token: string): JwtPayload {
-  const secret = requireSecret(env.jwtRefreshSecret, "JWT_REFRESH_SECRET");
-
-  return jwt.verify(token, secret) as unknown as JwtPayload;
+  return jwt.verify(token, secret) as AuthTokenPayload;
 }
