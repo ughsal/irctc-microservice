@@ -3,7 +3,6 @@ import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import { prisma } from "../config/prisma";
 import { redisClient } from "../config/redis";
-import { env } from "../config/env";
 import { logger } from "../utils/logger";
 import {
   BadRequestError,
@@ -19,8 +18,9 @@ import {
 import { generateAndStoreOtp, verifyOtp } from "../utils/otp";
 import { verifyOtpEmail } from "./email";
 import { notificationProducer } from "../kafka/producer/notification.producer";
+import config from "../config";
 
-const client = new OAuth2Client(env.googleClientId ?? "");
+const client = new OAuth2Client(config.GOOGLE_CLIENT_ID ?? "");
 
 type LoginResult = {
   accessToken: string;
@@ -52,7 +52,7 @@ export async function sendOTP(
   const meta = { firstName, lastName, email, hashedPassword };
   const { otp, otpSessionId } = await generateAndStoreOtp(meta);
 
-  await notificationProducer.sendOtpEmail(email, otp, env.otpTtl / 60);
+  await notificationProducer.sendOtpEmail(email, otp, config.OTP_TTL / 60);
   logger.info(`OTP email queued for: ${email}`);
 
   return { otpSessionId };
@@ -137,14 +137,14 @@ export async function login(
     `refresh:${existingUser.id}:${deviceId}`,
     decodedRefreshToken.jti,
     {
-      EX: env.refreshTokenExpSec,
+      EX: config.REFRESH_TOKEN_EXP_SEC,
     },
   );
 
   const { password: _password, ...safeUser } = existingUser;
 
   await redisClient.set(`user:${existingUser.id}`, JSON.stringify(safeUser), {
-    EX: env.redisUserTtl,
+    EX: config.REDIS_USER_TTL,
   });
 
   return {
@@ -197,7 +197,7 @@ export async function rotateRefreshToken(
     `refresh:${userId}:${deviceId}`,
     decodedNewRefresh.jti,
     {
-      EX: env.refreshTokenExpSec,
+      EX: config.REFRESH_TOKEN_EXP_SEC,
     },
   );
 
@@ -208,13 +208,13 @@ export async function verifyGoogleIdToken(
   idToken: string,
   deviceId: string,
 ): Promise<LoginResult> {
-  if (!env.googleClientId) {
+  if (!config.GOOGLE_CLIENT_ID) {
     throw new BadRequestError("Google client id is missing");
   }
 
   const ticket = await client.verifyIdToken({
     idToken,
-    audience: env.googleClientId,
+    audience: config.GOOGLE_CLIENT_ID,
   });
 
   const payload = ticket.getPayload();
@@ -295,14 +295,14 @@ export async function verifyGoogleIdToken(
     `refresh:${user.id}:${deviceId}`,
     decodedRefreshToken.jti,
     {
-      EX: env.refreshTokenExpSec,
+      EX: config.REFRESH_TOKEN_EXP_SEC,
     },
   );
 
   const { password: _password, ...safeUser } = user;
 
   await redisClient.set(`user:${user.id}`, JSON.stringify(safeUser), {
-    EX: env.redisUserTtl,
+    EX: config.REDIS_USER_TTL,
   });
 
   return {

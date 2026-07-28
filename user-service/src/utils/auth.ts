@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "crypto";
 import * as jwt from "jsonwebtoken";
-import { env } from "../config/env";
+import config from "../config";
 
 export type AuthTokenPayload = jwt.JwtPayload & {
   id: string;
@@ -16,14 +16,14 @@ function requireSecret(secret: string | undefined, name: string): string {
 }
 
 export function generateAccessToken(userId: string): string {
-  const secret = requireSecret(env.jwtAccessSecret, "JWT_ACCESS_SECRET");
+  const secret = requireSecret(config.JWT_ACCESS_SECRET, "JWT_ACCESS_SECRET");
   return jwt.sign({ id: userId }, secret, {
-    expiresIn: env.accessTokenExp as jwt.SignOptions["expiresIn"],
+    expiresIn: config.ACCESS_TOKEN_EXP as jwt.SignOptions["expiresIn"],
   });
 }
 
 export function generateRefreshToken(userId: string): string {
-  const secret = requireSecret(env.jwtRefreshSecret, "JWT_REFRESH_SECRET");
+  const secret = requireSecret(config.JWT_REFRESH_SECRET, "JWT_REFRESH_SECRET");
 
   return jwt.sign(
     {
@@ -32,7 +32,7 @@ export function generateRefreshToken(userId: string): string {
     },
     secret,
     {
-      expiresIn: env.refreshTokenExp as jwt.SignOptions["expiresIn"],
+      expiresIn: config.REFRESH_TOKEN_EXP as jwt.SignOptions["expiresIn"],
     },
   );
 }
@@ -42,13 +42,13 @@ export function hashToken(token: string): string {
 }
 
 export function verifyAccessToken(token: string): AuthTokenPayload {
-  const secret = requireSecret(env.jwtAccessSecret, "JWT_ACCESS_SECRET");
+  const secret = requireSecret(config.JWT_ACCESS_SECRET, "JWT_ACCESS_SECRET");
 
   return jwt.verify(token, secret) as AuthTokenPayload;
 }
 
 export function verifyRefreshToken(token: string): AuthTokenPayload {
-  const secret = requireSecret(env.jwtRefreshSecret, "JWT_REFRESH_SECRET");
+  const secret = requireSecret(config.JWT_REFRESH_SECRET, "JWT_REFRESH_SECRET");
 
   return jwt.verify(token, secret) as AuthTokenPayload;
 }

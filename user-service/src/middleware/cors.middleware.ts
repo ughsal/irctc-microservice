@@ -1,5 +1,9 @@
 import cors, { CorsOptions } from "cors";
-import { env } from "../config/env";
+import config from "../config";
+
+const allowedOrigins = config.ALLOWED_ORIGINS.split(",")
+  .map(origin => origin.trim())
+  .filter(Boolean);
 
 const corsOptions: CorsOptions = {
   origin(origin, callback) {
@@ -9,7 +13,7 @@ const corsOptions: CorsOptions = {
       return callback(null, true);
     }
 
-    if (env.allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
 

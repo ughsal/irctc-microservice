@@ -4,7 +4,7 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
-import { env } from "./config/env";
+import config from "./config";
 import { errorHandler } from "./middleware/error.middleware";
 import { corsMiddleware } from "./middleware/cors.middleware";
 import { reqLogger } from "./middleware/req.middleware";
@@ -32,7 +32,7 @@ app.use(reqLogger);
 app.use("/api/v1/auth", authRouter);
 app.get("/", (_req, res) => {
   res.json({
-    service: env.serviceName,
+    service: config.SERVICE_NAME,
     status: "ok",
   });
 });

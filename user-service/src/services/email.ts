@@ -1,4 +1,4 @@
-import { env } from "../config/env";
+import config from "../config";
 
 const RESEND_API_URL = "https://api.resend.com/emails";
 
@@ -91,22 +91,22 @@ async function sendEmail(params: {
   html: string;
   text: string;
 }): Promise<void> {
-  if (!env.resendApiKey) {
+  if (!config.RESEND_API_KEY) {
     throw new Error("RESEND_API_KEY environment variable is required");
   }
 
-  if (!env.mailSend) {
+  if (!config.MAIL_SEND) {
     throw new Error("MAIL_SEND environment variable is required");
   }
 
   const response = await fetch(RESEND_API_URL, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${env.resendApiKey}`,
+      Authorization: `Bearer ${config.RESEND_API_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: env.mailSend,
+      from: config.MAIL_SEND,
       to: params.to,
       subject: params.subject,
       html: params.html,

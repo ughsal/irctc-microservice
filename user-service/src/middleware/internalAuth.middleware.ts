@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { env } from "../config/env";
+import config from "../config";
 import { AppError } from "../utils/error";
 
 export function internalAuth(
@@ -9,7 +9,7 @@ export function internalAuth(
 ): void {
   const internalKey = req.header("x-internal-service-key");
 
-  if (!internalKey || internalKey !== env.internalServiceKey) {
+  if (!internalKey || internalKey !== config.INTERNAL_SERVICE_KEY) {
     next(new AppError("Unauthorized", 401));
     return;
   }

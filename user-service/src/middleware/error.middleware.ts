@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { env } from "../config/env";
+import config from "../config";
 import { logger } from "../utils/logger";
 import { AppError } from "../utils/error";
 
@@ -19,7 +19,7 @@ export function errorHandler(
 
   logger.error("Unhandled error", error);
 
-  if (env.nodeEnv !== "production") {
+  if (config.NODE_ENV !== "production") {
     logger.error(
       `${req.method} ${req.originalUrl}`,
       error instanceof Error ? error.stack : undefined,
