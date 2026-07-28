@@ -4,7 +4,8 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { AppError } from "../utils/error";
 import { getDeviceFingerprint } from "../utils/deviceFingerprint";
 import * as authService from "../services/auth.service";
-
+import { UnauthorizedError } from "../utils/errors";
+import config from "../config";
 const isProd = env.nodeEnv === "production";
 
 const cookieOptions = (maxAge: number) => ({
@@ -25,7 +26,12 @@ export const sendOTP = asyncHandler(async (req: Request, res: Response) => {
     throw new AppError("Password mismatch", 400);
   }
 
-  const { otpSessionId } = await authService.sendOTP(firstName, lastName, email, password);
+  const { otpSessionId } = await authService.sendOTP(
+    firstName,
+    lastName,
+    email,
+    password,
+  );
 
   res
     .cookie("otp_session", otpSessionId, cookieOptions(env.otpTtl * 1000))
@@ -86,8 +92,16 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   );
 
   res
-    .cookie("accessToken", accessToken, cookieOptions(env.accessTokenExpSec * 1000))
-    .cookie("refreshToken", refreshToken, cookieOptions(env.refreshTokenExpSec * 1000))
+    .cookie(
+      "accessToken",
+      accessToken,
+      cookieOptions(config.ACCESS_TOKEN_EXP_SEC * 1000),
+    )
+    .cookie(
+      "refreshToken",
+      refreshToken,
+      cookieOptions(config.REFRESH_TOKEN_EXP_SEC * 1000),
+    )
     .status(200)
     .json({
       success: true,
@@ -96,49 +110,65 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     });
 });
 
-export const rotateRefreshToken = asyncHandler(async (req: Request, res: Response) => {
-  const refreshToken = req.cookies?.refreshToken;
+export const rotateRefreshToken = asyncHandler(
+  async (req: Request, res: Response) => {
+    const refreshToken = req.cookies?.refreshToken;
 
-  if (!refreshToken) {
-    throw new AppError("Refresh token is missing", 401);
-  }
+    if (!refreshToken) {
+      throw new UnauthorizedError("Refresh token is missing. Login again.");
+    }
 
-  const deviceId = getDeviceFingerprint(req);
-  const { newAccessToken, newRefreshToken } = await authService.rotateRefreshToken(
-    refreshToken,
-    deviceId,
-  );
+    const deviceId = getDeviceFingerprint(req);
+    const { newAccessToken, newRefreshToken } =
+      await authService.rotateRefreshToken(refreshToken, deviceId);
 
-  res
-    .cookie("accessToken", newAccessToken, cookieOptions(env.accessTokenExpSec * 1000))
-    .cookie("refreshToken", newRefreshToken, cookieOptions(env.refreshTokenExpSec * 1000))
-    .status(200)
-    .json({
-      success: true,
-      message: "Access and Refresh token reissued",
-    });
-});
+    res
+      .cookie(
+        "accessToken",
+        newAccessToken,
+        cookieOptions(config.ACCESS_TOKEN_EXP_SEC * 1000),
+      )
+      .cookie(
+        "refreshToken",
+        newRefreshToken,
+        cookieOptions(config.REFRESH_TOKEN_EXP_SEC * 1000),
+      )
+      .status(200)
+      .json({
+        success: true,
+        message: "Access and Refresh token reissued",
+      });
+  },
+);
 
-export const verifyGoogleIdToken = asyncHandler(async (req: Request, res: Response) => {
-  const { idToken } = req.body;
+export const verifyGoogleIdToken = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { idToken } = req.body;
 
-  if (!idToken) {
-    throw new AppError("Invalid Google ID Token", 400);
-  }
+    if (!idToken) {
+      throw new AppError("Invalid Google ID Token", 400);
+    }
 
-  const deviceId = getDeviceFingerprint(req);
-  const { accessToken, refreshToken, loggedInUser } = await authService.verifyGoogleIdToken(
-    idToken,
-    deviceId,
-  );
+    const deviceId = getDeviceFingerprint(req);
+    const { accessToken, refreshToken, loggedInUser } =
+      await authService.verifyGoogleIdToken(idToken, deviceId);
 
-  res
-    .cookie("accessToken", accessToken, cookieOptions(env.accessTokenExpSec * 1000))
-    .cookie("refreshToken", refreshToken, cookieOptions(env.refreshTokenExpSec * 1000))
-    .status(200)
-    .json({
-      success: true,
-      message: "Logged in successfully",
-      loggedInUser,
-    });
-});
+    res
+      .cookie(
+        "accessToken",
+        accessToken,
+        cookieOptions(config.ACCESS_TOKEN_EXP_SEC * 1000),
+      )
+      .cookie(
+        "refreshToken",
+        refreshToken,
+        cookieOptions(config.REFRESH_TOKEN_EXP_SEC * 1000),
+      )
+      .status(200)
+      .json({
+        success: true,
+        message: "Logged in successfully",
+        loggedInUser,
+      });
+  },
+);
