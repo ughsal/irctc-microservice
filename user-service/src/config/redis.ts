@@ -1,5 +1,5 @@
 import { createClient, type RedisClientType } from "redis";
-import { env } from "./env";
+import config from "./index";
 import { logger } from "../utils/logger";
 
 class RedisClient {
@@ -13,7 +13,7 @@ class RedisClient {
   static getInstance(): RedisClientType {
     if (!RedisClient.instance) {
       RedisClient.instance = createClient({
-        url: env.redisUrl,
+        url: config.REDIS_URL,
       });
 
       RedisClient.setupEventListeners();

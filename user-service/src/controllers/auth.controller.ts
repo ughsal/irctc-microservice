@@ -1,12 +1,11 @@
 import type { Request, Response } from "express";
-import { env } from "../config/env";
 import { asyncHandler } from "../utils/asyncHandler";
 import { AppError } from "../utils/error";
 import { getDeviceFingerprint } from "../utils/deviceFingerprint";
 import * as authService from "../services/auth.service";
 import { UnauthorizedError } from "../utils/errors";
 import config from "../config";
-const isProd = env.nodeEnv === "production";
+const isProd = config.NODE_ENV === "production";
 
 const cookieOptions = (maxAge: number) => ({
   httpOnly: true,
@@ -34,7 +33,7 @@ export const sendOTP = asyncHandler(async (req: Request, res: Response) => {
   );
 
   res
-    .cookie("otp_session", otpSessionId, cookieOptions(env.otpTtl * 1000))
+    .cookie("otp_session", otpSessionId, cookieOptions(config.OTP_TTL * 1000))
     .status(200)
     .json({
       success: true,

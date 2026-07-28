@@ -1,14 +1,14 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { env } from "../config/env";
+import config from "../config";
 import { AppError } from "../utils/error";
 
 function requireAccessSecret(): string {
-  if (!env.jwtAccessSecret) {
+  if (!config.JWT_ACCESS_SECRET) {
     throw new Error("JWT_ACCESS_SECRET environment variable is required");
   }
 
-  return env.jwtAccessSecret;
+  return config.JWT_ACCESS_SECRET;
 }
 
 export function getUserContext(
