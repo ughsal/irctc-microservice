@@ -122,16 +122,18 @@ export const rotateRefreshToken = asyncHandler(
       await authService.rotateRefreshToken(refreshToken, deviceId);
 
     res
-      .cookie(
-        "accessToken",
-        newAccessToken,
-        cookieOptions(config.ACCESS_TOKEN_EXP_SEC * 1000),
-      )
-      .cookie(
-        "refreshToken",
-        newRefreshToken,
-        cookieOptions(config.REFRESH_TOKEN_EXP_SEC * 1000),
-      )
+      .cookie("accessToken", newAccessToken, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? ("strict" as const) : ("lax" as const),
+        maxAge: config.ACCESS_TOKEN_EXP_SEC * 1000,
+      })
+      .cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? ("strict" as const) : ("lax" as const),
+        maxAge: config.REFRESH_TOKEN_EXP_SEC * 1000,
+      })
       .status(200)
       .json({
         success: true,

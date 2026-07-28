@@ -31,6 +31,8 @@ type LoginResult = {
     lastName: string;
     email: string;
     emailVerified: boolean;
+    createdAt: Date;
+    updatedAt: Date;
   };
 };
 
@@ -92,6 +94,8 @@ export async function verifyOTP(
     lastName: user.lastName,
     email: user.email,
     emailVerified: user.emailVerified,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
   };
 }
 
@@ -156,6 +160,8 @@ export async function login(
       lastName: safeUser.lastName,
       email: safeUser.email,
       emailVerified: safeUser.emailVerified,
+      createdAt: safeUser.createdAt,
+      updatedAt: safeUser.updatedAt,
     },
   };
 }
@@ -163,7 +169,11 @@ export async function login(
 export async function rotateRefreshToken(
   refreshToken: string,
   deviceId: string,
-): Promise<{ newAccessToken: string; newRefreshToken: string }> {
+): Promise<{
+  newAccessToken: string;
+  newRefreshToken: string;
+  deviceId: string;
+}> {
   const payload = verifyRefreshToken(refreshToken);
   const userId = payload.id;
   const jti = jwt.decode(refreshToken) as { jti?: string } | null;
@@ -201,7 +211,7 @@ export async function rotateRefreshToken(
     },
   );
 
-  return { newAccessToken, newRefreshToken };
+  return { newAccessToken, newRefreshToken, deviceId };
 }
 
 export async function verifyGoogleIdToken(
@@ -314,6 +324,8 @@ export async function verifyGoogleIdToken(
       lastName: safeUser.lastName,
       email: safeUser.email,
       emailVerified: safeUser.emailVerified,
+      createdAt: safeUser.createdAt,
+      updatedAt: safeUser.updatedAt,
     },
   };
 }
