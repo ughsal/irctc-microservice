@@ -4,6 +4,7 @@ coverage/
 .cache/
 .turbo/
 .vite/
+.next/
 .parcel-cache/
 .eslintcache
 *.tsbuildinfo

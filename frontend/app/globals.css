@@ -1,0 +1,153 @@
+:root {
+  font-family: "Aptos", "Segoe UI", sans-serif;
+  color: #11211f;
+  background: #edf2ec;
+}
+
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body { margin: 0; min-width: 320px; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(420px, 0.92fr) minmax(520px, 1.18fr);
+  overflow: hidden;
+  background: #edf2ec;
+}
+
+.login-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem clamp(2rem, 6vw, 7rem);
+  background:
+    radial-gradient(circle at 12% 15%, rgba(218, 242, 226, 0.82), transparent 28rem),
+    linear-gradient(135deg, #f8fbf6 0%, #e7efe8 100%);
+}
+
+.login-panel::before {
+  content: "";
+  position: absolute;
+  inset: 1rem;
+  border: 1px solid rgba(22, 79, 68, 0.11);
+  pointer-events: none;
+}
+
+.login-panel__brand {
+  position: absolute;
+  top: 2.25rem;
+  left: clamp(2rem, 6vw, 7rem);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #164f44;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  font-size: 0.85rem;
+}
+
+.brand-mark { display: inline-flex; align-items: end; gap: 3px; height: 1.35rem; }
+.brand-mark i { display: block; width: 4px; background: #e18b42; border-radius: 3px; transform: skewX(-12deg); }
+.brand-mark i:nth-child(1) { height: 0.65rem; }
+.brand-mark i:nth-child(2) { height: 1rem; }
+.brand-mark i:nth-child(3) { height: 1.35rem; }
+
+.login-card { position: relative; width: min(100%, 29rem); z-index: 1; }
+.login-card__heading { margin-bottom: 2rem; }
+.login-card__eyebrow, .travel-visual__kicker {
+  margin: 0 0 0.75rem;
+  color: #29715f;
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+.login-card h1 { max-width: 25rem; margin: 0; font-family: Georgia, serif; font-size: clamp(2.35rem, 4.1vw, 4.25rem); font-weight: 400; line-height: 0.98; letter-spacing: -0.055em; }
+.login-card__heading > p:last-child { margin: 1.15rem 0 0; max-width: 24rem; color: #56706a; font-size: 0.97rem; line-height: 1.6; }
+.login-card__error { margin: 0 0 1rem; padding: 0.8rem 1rem; border-left: 3px solid #c65a3b; background: #fff1e9; color: #8a321e; font-size: 0.875rem; }
+
+.login-form { display: grid; gap: 1.15rem; }
+.login-form > label { display: grid; gap: 0.48rem; color: #254b43; font-size: 0.8rem; font-weight: 750; letter-spacing: 0.02em; }
+.login-form input:not([type="checkbox"]) { width: 100%; min-height: 3.35rem; padding: 0 1rem; border: 1px solid #b9cfc1; border-radius: 0.25rem; outline: none; background: rgba(255, 255, 255, 0.75); color: #11211f; transition: border-color 180ms ease, box-shadow 180ms ease; }
+.login-form input:not([type="checkbox"]):focus { border-color: #286d5d; box-shadow: 0 0 0 4px rgba(40, 109, 93, 0.12); }
+.login-form input::placeholder { color: #8aa098; }
+.login-form__meta { display: flex; justify-content: space-between; align-items: center; gap: 1rem; color: #55746b; font-size: 0.79rem; }
+.remember-choice { display: inline-flex; align-items: center; gap: 0.45rem; }
+.remember-choice input { accent-color: #286d5d; }
+.text-button { padding: 0; border: 0; background: transparent; color: #1e6d5d; font-weight: 700; }
+.text-button:hover { color: #0b4438; text-decoration: underline; }
+.login-form__submit { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 3.45rem; padding: 0 1.1rem 0 1.25rem; border: 0; border-radius: 0.25rem; background: #174f44; color: #fffdf8; font-size: 0.91rem; font-weight: 750; box-shadow: 0 14px 28px rgba(19, 79, 67, 0.19); transition: transform 180ms ease, background 180ms ease; }
+.login-form__submit:hover:not(:disabled) { transform: translateY(-2px); background: #0e3f35; }
+.login-form__submit:disabled { cursor: wait; opacity: 0.72; }
+.login-form__submit span { font-size: 1.45rem; font-weight: 300; }
+.login-card__divider { display: flex; align-items: center; gap: 0.75rem; margin: 1.65rem 0; color: #789187; font-size: 0.73rem; text-transform: uppercase; letter-spacing: 0.1em; }
+.login-card__divider::before, .login-card__divider::after { content: ""; flex: 1; height: 1px; background: #c8d7cd; }
+.login-card__google { display: flex; justify-content: center; min-height: 2.75rem; }
+.login-card__footer { margin: 1.5rem 0 0; color: #607b72; text-align: center; font-size: 0.82rem; }
+
+.travel-visual { position: relative; min-height: 100vh; overflow: hidden; color: #ecf8ef; background: #0d2c30; isolation: isolate; }
+.travel-visual::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 63% 47%, rgba(56, 189, 160, 0.21), transparent 21rem), radial-gradient(circle at 12% 82%, rgba(224, 140, 69, 0.2), transparent 25rem), linear-gradient(136deg, #153f40 0%, #0c292e 48%, #071c26 100%); z-index: -2; }
+.travel-visual__grain { position: absolute; inset: 0; z-index: -1; opacity: 0.24; background-image: radial-gradient(rgba(220, 255, 240, 0.32) 0.65px, transparent 0.75px); background-size: 6px 6px; mask-image: linear-gradient(to bottom, black, transparent 70%); }
+.travel-visual__eyebrow { position: absolute; top: 2.35rem; right: 2.5rem; color: rgba(218, 243, 229, 0.65); font-family: "Cascadia Code", Consolas, monospace; font-size: 0.65rem; letter-spacing: 0.17em; }
+.travel-visual__copy { position: relative; z-index: 2; max-width: 33rem; padding: clamp(3.2rem, 9vh, 7.25rem) clamp(2rem, 7vw, 7rem) 0; }
+.travel-visual__kicker { color: #86efca; }
+.travel-visual__copy h2 { margin: 0; font-family: Georgia, serif; font-weight: 400; font-size: clamp(2.7rem, 5vw, 5.6rem); line-height: 0.94; letter-spacing: -0.06em; }
+.travel-visual__copy > p:last-child { max-width: 25rem; margin: 1.45rem 0 0; color: #b7cfc7; font-size: 0.98rem; line-height: 1.7; }
+.travel-visual__stage { position: absolute; inset: 26% -4% 7% 3%; }
+.globe { position: absolute; top: 12%; left: 4%; width: clamp(13rem, 23vw, 20rem); aspect-ratio: 1; border: 1px solid rgba(175, 239, 215, 0.75); border-radius: 50%; box-shadow: inset 0 0 4.5rem rgba(42, 194, 161, 0.21), 0 0 5rem rgba(45, 205, 172, 0.14); animation: globeFloat 7s ease-in-out infinite; }
+.globe::before, .globe::after { content: ""; position: absolute; inset: 13%; border: 1px solid rgba(129, 224, 192, 0.42); border-radius: 50%; }
+.globe::after { inset: 0; transform: rotate(58deg) scaleX(0.36); }
+.globe__latitude, .globe__longitude { position: absolute; display: block; border: 1px solid rgba(129, 224, 192, 0.35); }
+.globe__latitude { left: 2%; right: 2%; border-radius: 50%; height: 28%; }
+.globe__latitude--one { top: 20%; }
+.globe__latitude--two { bottom: 20%; }
+.globe__longitude { top: 1%; bottom: 1%; width: 43%; border-radius: 50%; }
+.globe__longitude--one { left: 14%; }
+.globe__longitude--two { right: 14%; }
+.globe__core { position: absolute; inset: 42%; border-radius: 50%; background: #f8d076; box-shadow: 0 0 0 5px rgba(248, 208, 118, 0.12), 0 0 2rem #f8d076; }
+.orbit { position: absolute; top: 0; left: 0; width: 24rem; height: 24rem; border: 1px dashed rgba(155, 239, 207, 0.37); border-radius: 50%; transform: rotateX(64deg) rotateZ(-22deg); animation: orbitSpin 17s linear infinite; }
+.orbit--one { top: 5%; left: -3%; }
+.orbit--two { top: -7%; left: 3%; width: 29rem; height: 29rem; animation-duration: 25s; animation-direction: reverse; }
+.orbit--three { top: 15%; left: -10%; width: 32rem; height: 32rem; border-style: solid; opacity: 0.4; animation-duration: 31s; }
+.route-map { position: absolute; right: -3%; bottom: 2%; width: min(82%, 48rem); overflow: visible; transform: perspective(800px) rotateX(50deg) rotateZ(-12deg); transform-origin: bottom right; opacity: 0; animation: mapArrive 1.35s 220ms cubic-bezier(.2,.75,.2,1) forwards; }
+.route-map__grid path { stroke: rgba(189, 238, 219, 0.13); stroke-width: 1; }
+.route-map__coast { stroke: rgba(245, 246, 194, 0.45); stroke-width: 1.5; stroke-dasharray: 7 8; }
+.route-map__route { stroke: url(#routeGradient); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 16 10; animation: routeDash 3.8s linear infinite; }
+.route-map__route--secondary { stroke-width: 2; opacity: 0.75; animation-direction: reverse; animation-duration: 5.5s; }
+.route-map__node circle { fill: #fbde81; stroke: #f3fff5; stroke-width: 3; animation: nodePulse 2.2s ease-in-out infinite; }
+.route-map__node circle:nth-child(2) { animation-delay: 0.45s; }
+.route-map__node circle:nth-child(3) { animation-delay: 0.9s; }
+.route-map__node circle:nth-child(4) { animation-delay: 1.35s; }
+.travel-visual__caption { position: absolute; bottom: 2.3rem; left: clamp(2rem, 7vw, 7rem); display: flex; align-items: center; gap: 0.55rem; color: rgba(218, 243, 229, 0.68); font-family: "Cascadia Code", Consolas, monospace; font-size: 0.64rem; letter-spacing: 0.13em; }
+.travel-visual__caption-dot { width: 0.35rem; height: 0.35rem; border-radius: 50%; background: #f8d076; box-shadow: 0 0 0.6rem #f8d076; }
+
+@keyframes globeFloat { 50% { transform: translate(1rem, -0.85rem); } }
+@keyframes orbitSpin { to { transform: rotateX(64deg) rotateZ(338deg); } }
+@keyframes mapArrive { from { opacity: 0; transform: perspective(800px) rotateX(62deg) rotateZ(-23deg) translateY(4rem); } to { opacity: 1; transform: perspective(800px) rotateX(50deg) rotateZ(-12deg); } }
+@keyframes routeDash { to { stroke-dashoffset: -104; } }
+@keyframes nodePulse { 50% { r: 11; opacity: 0.65; } }
+
+@media (max-width: 900px) {
+  .login-page { grid-template-columns: 1fr; }
+  .login-panel { min-height: 100vh; padding: 7rem clamp(1.5rem, 9vw, 4rem) 3rem; }
+  .travel-visual { min-height: 41rem; }
+  .travel-visual__copy { padding-top: 5rem; }
+  .travel-visual__stage { inset: 20% -5% 2% 1%; }
+}
+
+@media (max-width: 560px) {
+  .login-panel::before { inset: 0.6rem; }
+  .login-panel__brand { left: 1.5rem; top: 1.6rem; }
+  .login-form__meta { align-items: flex-start; flex-direction: column; gap: 0.55rem; }
+  .travel-visual__eyebrow { right: 1.5rem; }
+  .travel-visual__copy h2 { font-size: 3.2rem; }
+  .route-map { width: 115%; right: -21%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
