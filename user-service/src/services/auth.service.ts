@@ -275,7 +275,7 @@ export async function verifyGoogleIdToken(
       return existingUser;
     }
 
-    return tx.user.create({
+    return await tx.user.create({
       data: {
         email: googleUser.email,
         firstName: googleUser.firstName,

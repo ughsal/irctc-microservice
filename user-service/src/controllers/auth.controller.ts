@@ -143,7 +143,7 @@ export const rotateRefreshToken = asyncHandler(
 );
 
 export const verifyGoogleIdToken = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     const { idToken } = req.body;
 
     if (!idToken) {

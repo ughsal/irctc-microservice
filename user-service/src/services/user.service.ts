@@ -1,6 +1,7 @@
 import { prisma } from "../config/prisma";
 import { redisClient } from "../config/redis";
 import { AppError } from "../utils/error";
+import config from "../config";
 
 export async function getProfile(userId: string) {
   const cachedUser = await redisClient.get(`user:${userId}`);
@@ -31,7 +32,7 @@ export async function getProfile(userId: string) {
   }
 
   await redisClient.set(`user:${userId}`, JSON.stringify(user), {
-    EX: 86400,
+    EX: config.REDIS_USER_TTL,
   });
 
   return user;
