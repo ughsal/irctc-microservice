@@ -117,7 +117,7 @@ services:
       DATABASE_URL: postgres://admin:irctcpass@postgres:5432/user_service_database
       REDIS_URL: redis://:${REDIS_PASSWORD:-irctcpass}@redis:6379
       # KAFKA_BROKER: kafka:9092
-      ALLOWED_ORIGINS: http://localhost:4000,http://localhost:4001,http://localhost:4005
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:4000,http://localhost:4001,http://localhost:4005
       OTP_TTL: 300
       OTP_HMAC_SECRET: ${OTP_HMAC_SECRET}
       OTP_RATE_MAX_PER_HOUR: 5

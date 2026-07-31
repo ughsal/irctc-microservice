@@ -31,7 +31,11 @@ client.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as RetryableRequest | undefined;
 
-    if (error.response?.status !== 401 || !originalRequest || originalRequest._retry) {
+    if (
+      error.response?.status !== 401 ||
+      !originalRequest ||
+      originalRequest._retry
+    ) {
       return Promise.reject(error);
     }
 
@@ -45,7 +49,11 @@ client.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      await axios.post(`${API_BASE}/users/auth/refresh`, {}, { withCredentials: true });
+      await axios.post(
+        `${API_BASE}/auth/refresh`,
+        {},
+        { withCredentials: true },
+      );
       processQueue();
       return client(originalRequest);
     } catch (refreshError) {

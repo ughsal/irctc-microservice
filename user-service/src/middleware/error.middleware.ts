@@ -9,6 +9,13 @@ export function errorHandler(
   res: Response,
   _next: NextFunction,
 ): void {
+  console.error("========== ERROR ==========");
+  console.error(error);
+
+  if (error instanceof Error) {
+    console.error(error.stack);
+  }
+
   if (error instanceof AppError) {
     res.status(error.statusCode).json({
       success: false,
@@ -18,13 +25,6 @@ export function errorHandler(
   }
 
   logger.error("Unhandled error", error);
-
-  if (config.NODE_ENV !== "production") {
-    logger.error(
-      `${req.method} ${req.originalUrl}`,
-      error instanceof Error ? error.stack : undefined,
-    );
-  }
 
   res.status(500).json({
     success: false,

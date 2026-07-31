@@ -12,7 +12,9 @@ export default function Providers({ children }: { children: ReactNode }) {
   }, [fetchProfile]);
 
   return (
-    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}>
+    <GoogleOAuthProvider
+      clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
+    >
       {children}
     </GoogleOAuthProvider>
   );

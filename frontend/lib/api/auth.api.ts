@@ -10,12 +10,16 @@ export type RegisterPayload = {
 
 export const authApi = {
   sendOtp: (data: RegisterPayload) =>
-    client.post("/users/auth/send-otp", data).then(response => response.data),
+    client.post("/auth/send-otp", data).then(r => r.data),
+
   verifyOtp: (otp: string) =>
-    client.post("/users/auth/verify-otp", { otp }).then(response => response.data),
+    client.post("/auth/verify-otp", { otp }).then(r => r.data),
+
   login: (email: string, password: string) =>
-    client.post("/users/auth/login", { email, password }).then(response => response.data),
+    client.post("/auth/login", { email, password }).then(r => r.data),
+
   googleAuth: (idToken: string) =>
-    client.post("/users/auth/google-auth", { idToken }).then(response => response.data),
-  getProfile: () => client.get("/users/user/profile").then(response => response.data),
+    client.post("/auth/google-auth", { idToken }).then(r => r.data),
+
+  getProfile: () => client.get("/user/profile").then(r => r.data),
 };

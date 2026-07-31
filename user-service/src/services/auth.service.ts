@@ -221,7 +221,7 @@ export async function verifyGoogleIdToken(
   if (!config.GOOGLE_CLIENT_ID) {
     throw new BadRequestError("Google client id is missing");
   }
-
+  console.log("GOOGLE_CLIENT_ID:", config.GOOGLE_CLIENT_ID);
   const ticket = await client.verifyIdToken({
     idToken,
     audience: config.GOOGLE_CLIENT_ID,
