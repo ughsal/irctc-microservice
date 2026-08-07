@@ -18,6 +18,7 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.0",
     "js-logger": "^1.6.1",
-    "kafkajs": "^2.2.4"
+    "kafkajs": "^2.2.4",
+    "winston": "^3.19.0"
   }
 }
